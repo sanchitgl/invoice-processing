@@ -1,0 +1,11 @@
+-create Environment 
+virtualenv env_invoice
+
+-Activate environment 
+source env_invoice/bin/activate
+
+- export dependencies
+pip3 freeze > requirements.txt
+
+- Install dependencies
+pip install -r requirements.txt
