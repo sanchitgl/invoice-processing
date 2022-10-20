@@ -89,7 +89,7 @@ def fix_df(df):
     
     nest = [prod_model,qty,unit_p,item_tot,conf,low_conf]
     df_fix = pd.DataFrame((_ for _ in itertools.zip_longest(*nest)), columns=['Product_model','Qty','Unit_price','Item_total','Confidence','low_conf_fields'])
-    df_fix[['Vendor_name','Invoice_no','Invoice_date','Invoice_total','Currency']] = df[['Vendor_name','Invoice_no','Invoice_date','Invoice_total','Currency']]
+    df_fix[['filename','Vendor_name','Invoice_no','Invoice_date','Invoice_total','Currency']] = df[['filename','Vendor_name','Invoice_no','Invoice_date','Invoice_total','Currency']]
     #print("--------------------")
     #print(df_fix)
     return df_fix

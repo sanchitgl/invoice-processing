@@ -56,7 +56,7 @@ def analyze_invoice(invoices_st):
     for invoice_st in invoices_st:
         
         invoice_file = invoice_st.name
-        print(invoice_file)
+        #print(invoice_file)
         # if invoice_file.endswith('.pdf',".PDF"):
         #path_to_invoice = ("Invoices_2/"+invoice_file)
         #with open(path_to_invoice, "rb") as f:
@@ -80,7 +80,8 @@ def analyze_invoice(invoices_st):
                 intv = 0.5
                 vendor_conf, inv_no_conf, invoice_date_conf, invoice_total_conf, item_code_conf, unit_price_conf, item_quantity_conf, amount_conf = 0,0,0,0,0,0,0,0
                 df_item['filename'] = invoice_file
-
+                print(df_item['filename'])
+                print(invoice_file)
                 curr = [currency for currency in curr_list if currency in digitized_text]
                 if curr:
                     df_item['Currency'] = " ".join(curr)
@@ -126,12 +127,16 @@ def analyze_invoice(invoices_st):
                         low_conf.append("Item Total")
 
                 if item_quantity:
-                    #print(item_quantity)
+                    print(item_quantity)
                     if item_quantity.value:
                         df_item['Qty'] = item_quantity.value
                     elif item_quantity.content:
-                        item_quant_temp = re.match(r'\d+',str(item_quantity.content)).group()
-                        df_item['Qty'] = item_quant_temp
+                        print(item_quantity.content)
+                        try:
+                            item_quant_temp = re.match(r'\d+',str(item_quantity.content)).group()
+                            df_item['Qty'] = item_quant_temp
+                        except:
+                            df_item['Qty'] = item_quantity.content
                     item_quantity_conf = item_quantity.confidence
                     if item_quantity_conf <= intv:
                         low_conf.append("Qty")
@@ -166,10 +171,10 @@ def analyze_invoice(invoices_st):
                         df_item['Vendor_name'] = vendor_rec.value
                     else:
                         df_item['Vendor_name'] = 'NA' 
-                print(df_item['Vendor_name'])          
+                #print(df_item['Vendor_name'])          
                 df_item['Vendor_name']= df_item['Vendor_name'].split('\n')[0]
                     #Vendor_Name.append(vendor_name.value)
-                print(df_item['Vendor_name'])  
+                #print(df_item['Vendor_name'])  
 
 
                 invoice_id = invoice.fields.get("InvoiceId")
@@ -201,7 +206,7 @@ def analyze_invoice(invoices_st):
                     
                 
                 if not item_quantity:
-                    print('no_qty')
+                    #print('no_qty')
                     if amount and unit_price:
                         df_item['Qty'] = round(float(df_item['Item_total'])/float(df_item['Unit_price']))
 
@@ -241,7 +246,7 @@ def analyze_invoice(invoices_st):
             DF = clean_df(DF)
             vn_name = DF['Vendor_name'][0]
             vname_final = [k for k, v in vn_master.items() if vn_name in v]
-            print(vname_final)
+            #print(vname_final)
             if vname_final:
                 DF['Vendor_name'] = pd.Series([vname_final[0] for x in range(len(DF.index))])
             df_invoices = pd.concat([df_invoices,DF], ignore_index=True)
