@@ -1,6 +1,6 @@
 altair==4.2.0
 attrs==22.1.0
-azure-ai-formrecognizer==3.2.0b5
+azure-ai-formrecognizer==3.2.0
 azure-common==1.1.28
 azure-core==1.24.1
 backports.zoneinfo==0.2.1

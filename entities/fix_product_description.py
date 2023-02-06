@@ -7,10 +7,24 @@ def postprocess_model(df,item_table):
     if df['Product_model'].isnull().values.any():
         print("HEYYYYYYY")
         DF = fix_na(df,item_table)
-    elif df['Product_model'].str.contains('SHARP BRAND MODEL').any():
+    if df['Product_model'].str.contains('SHARP BRAND MODEL').any():
         DF = fix_na(df,item_table)
         print(DF)
         print("yes too much")
+    if df['Product_model'].str.contains('MODEL').any():
+        DF = fix_model_desc(df,item_table)
+        print(DF)
+        print("yes contain MODEL")
+    
+    if df['Product_model'].str.contains('SHARP BRAND GOODS').any():
+        DF = fix_model_desc(df,item_table)
+        print(DF)
+        print("yes contain GOODS")
+
+    if df['Product_model'].str.contains('\s|\n').any():
+        df['Product_model'] = df['Product_model'].str.split()
+        df['Product_model'] = df['Product_model'].str[0]
+        DF= df
     else:
         DF = df
         print('all good')
@@ -93,6 +107,21 @@ def fix_df(df):
     #print("--------------------")
     #print(df_fix)
     return df_fix
+
+def fix_model_desc(df,item_table):
+    def split_model(model_text):
+        model_match = re.search('MODEL\:\s?\n?(.*)', model_text)
+        goods_match = re.search('GOODS\:?\s?\n?\(?(.*)\)', model_text)
+        if model_match:
+            return model_match.group(1)
+        elif goods_match:
+            return goods_match.group(1)
+        else:
+            return model_text
+    
+    df['Product_model'] = df['Product_model'].apply(split_model)
+
+    return df
 
 def patterns(vname):
     if "VESTEL" in vname[0]:
