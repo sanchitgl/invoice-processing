@@ -120,6 +120,8 @@ def analyze_invoice(invoices_st):
                         amount_conf = amount.confidence
                         if amount_conf <= intv:
                             low_conf.append("Item Total")
+                    else:
+                        df_item['Item_total'] = None
 
                     if item_quantity:
                         # print(item_quantity)
@@ -135,6 +137,8 @@ def analyze_invoice(invoices_st):
                         item_quantity_conf = item_quantity.confidence
                         if item_quantity_conf <= intv:
                             low_conf.append("Qty")
+                    else:
+                        df_item['Qty'] = None
 
                     if unit_price:
                         unit_price_val = re.search("\d+\.\d+",str(unit_price.value)).group(0)
@@ -165,7 +169,7 @@ def analyze_invoice(invoices_st):
                         if vendor_rec:
                             df_item['Vendor_name'] = vendor_rec.value
                         else:
-                            df_item['Vendor_name'] = 'NA' 
+                            df_item['Vendor_name'] = None
                     #print(df_item['Vendor_name'])          
                     df_item['Vendor_name']= df_item['Vendor_name'].split('\n')[0]
                         #Vendor_Name.append(vendor_name.value)
@@ -180,6 +184,8 @@ def analyze_invoice(invoices_st):
                             low_conf.append("Invoice No.")
                         #print(inv_no_conf)
                         #Invoice_Id.append(invoice_id.value)
+                    else:
+                        df_item['Invoice_no'] = None
 
                     invoice_date = invoice.fields.get("InvoiceDate")
                     if invoice_date:
@@ -189,16 +195,26 @@ def analyze_invoice(invoices_st):
                             low_conf.append("Invoice Date")
                         #print(invoice_date_conf)
                         #Invoice_Date.append(invoice_date.value)
+                    else:
+                        df_item['Invoice_date'] = None
 
+                    subtotal = invoice.fields.get("SubTotal")
                     invoice_total = invoice.fields.get("InvoiceTotal")
-                    if invoice_total:
-                        total_no = re.search("\d+\.\d+",str(invoice_total.value)).group(0)
-                        df_item['Invoice_total'] = total_no
-
-                        invoice_total_conf = invoice_total.confidence    
-                        if invoice_total_conf <= intv:
+                    if subtotal:
+                        df_item['Invoice_total'] = subtotal.content
+                        subtotal_conf = subtotal.confidence    
+                        if subtotal_conf <= intv:
                             low_conf.append("Invoice Total")   
-                        
+                    else:
+                        if invoice_total:
+                            total_no = re.search("\d+\.\d+",str(invoice_total.value)).group(0)
+                            df_item['Invoice_total'] = total_no
+
+                            invoice_total_conf = invoice_total.confidence    
+                            if invoice_total_conf <= intv:
+                                low_conf.append("Invoice Total")   
+                        else:
+                            df_item['Invoice_total'] = None
                     
                     if not item_quantity:
                         #print('no_qty')
@@ -238,7 +254,9 @@ def analyze_invoice(invoices_st):
         except:
             errors.append(invoice_st.name)
     df_invoices = df_invoices[['filename','Invoice_no','Invoice_date','Vendor_name','Product_model','Qty','Unit_price','Item_total','Invoice_total','Currency','Confidence','low_conf_fields']]
-    df_invoices.to_csv('Tracker/Invoice_tracker.csv',encoding = 'utf8')
+    # df_invoices['Product_model'] = df_invoices['Product_model'].str.encode('utf-8')
+
+    df_invoices.to_csv('Tracker/Invoice_tracker.csv', encoding='utf-8',date_format='%d-%m-%Y')
     print(errors)
     
 if __name__ == "__main__":

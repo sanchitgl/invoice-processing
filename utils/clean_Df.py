@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 
 def clean_df(df):
     print(df)
@@ -13,5 +14,13 @@ def clean_df(df):
         if "JIANGSU" in vname:
             df = df.dropna(subset=['Qty','Unit_price', 'Item_total'], how='all')
     except:
-        print() 
+        print()
+
+    print(df)
+    # try:
+    # df['Invoice_date'] = pd.to_datetime(df['Invoice_date'], format='%d/%m/%Y')
+    # except:
+    #     print()
+    print(df)
+    # df = df.replace({r'[^\x00-\x7F]+':''}, regex=True, inplace=True) 
     return df 

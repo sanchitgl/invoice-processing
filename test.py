@@ -189,49 +189,107 @@ import re
 # stri = 'MyQ-X-E001/EN MyQ-X-E001/EN'
 
 # print(stri.split('\n'))
-df = pd.DataFrame({
-    'a':['SHARP BRAND GOODS(SWD-E3TLC-BE3)','asdh45','MODEL: asdh45']
-})
-# re_pattern = 'MODEL\:\s([^\s]+)'
-# for model_value in df[(df['a'].str.contains('MODEL'))].values:
-    
-# print(df[(df['a'].str.contains('MODEL'))])
-# df[(df['a'].str.contains('MODEL'))] = re.findall(re_pattern,df[(df['a'].str.contains('MODEL'))])
+import re
+import dateparser
+import spacy
+import datefinder
 
-# print(df)
-# if df['a'].str.contains('\s|\n').any():
-#     df['a'] = df['a'].str.split()
-#     df['a'] = df['a'].str[0]
-#     print(df)
-    # df.loc[df['a'].str.contains('\s|\n'), 'a'] = df.loc[df['a'].str.contains('\s|\n'), 'a'].str.split()[0]
-    # print(df)
-# def split_model(model_text):
-#     # if df['a'].str.contains('MODEL').any():
-#     #     regex_pattern = 'MODEL\:\s?\n?(.*)'
-#     # if df['a'].str.contains('SHARP BRAND GOODS').any():
-#     regex_pattern = 'MODEL\:\s?\n?((.*))|GOODS\:?\s?\n?\(?((.*))\)'
-#     if regex_pattern:
-#         x= re.search(regex_pattern, model_text)
-#         if x :
-#             return(x.group())
-#         else:
-#             return model_text
+# Load the SpaCy English language model
+nlp = spacy.load("en_core_web_sm")
 
-def split_model(model_text):
-    model_match = re.search('MODEL\:\s?\n?(.*)', model_text)
-    goods_match = re.search('GOODS\:?\s?\n?\(?(.*)\)', model_text)
-    if model_match:
-        return model_match.group(1)
-    elif goods_match:
-        return goods_match.group(1)
-    else:
-        return model_text
+# Define regular expressions to match different date formats
+date_patterns = [
+    r"\d{4}-\d{2}-\d{2}",  # YYYY-MM-DD
+    r"\d{2}/\d{2}/\d{4}",  # MM/DD/YYYY
+    r"\d{2}-\w{3}-\d{4}",  # DD-MMM-YYYY
+    r"\d{2}\s\w{3}\s\d{4}",  # DD MMM YYYY
+    r"\w{3}\s\d{1,2},\s\d{4}",  # MMM DD, YYYY
+    r"\d{1,2}\s\w{3},\s\d{4}",  # DD MMM, YYYY
+]
 
-# df['a'] = df['a'].apply(split_model)
-# print(df)
+# Define a function to extract dates using regular expressions
+def extract_dates_with_regex(text):
+    dates = []
+    for pattern in date_patterns:
+        date_pattern = re.compile(pattern)
+        for match in date_pattern.finditer(text):
+            date_str = match.group(0)
+            date = dateparser.parse(date_str)
+            if date:
+                dates.append(date)
+    return dates
 
-txt = 'AADHS 998SAh17'
+# Combine the results from both functions
+def extract_dates(text):
+    dates_with_regex = extract_dates_with_regex(text)
+    print(dates_with_regex)
+    # dates_with_spacy = extract_dates_with_spacy(text)
+    # print(dates_with_spacy)
+    dates = list(set(dates_with_regex))
+    return sorted(dates)
 
 
-# if re.search('\b[A-Za-z\s]+\b|\b[0-9\s]+\b', txt):
-print(re.search('(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]+', txt))
+text = '''
+                                                  key                                              value
+0                                             SHIPPER  NINGBO XINLE HOUSEHOLD APPLIANCES\nCO., LTD. 1...
+1                                                TEL:                                 0086-574-87495103*
+2                                       VOYAGE NUMBER                                  0FLBVW1MA/0FLBVW1
+3                               BILL OF LADING NUMBER                                         NBMD995146
+4                                           CONSIGNEE  VISALLY TRADE CENTRE PTY LTD C/O PILLAY R GROU...
+5                                               TEL :                            +248 610699 /2501072/27
+6                                               TEL :                         +248 610699 /2501072/27 **
+7                                            CARRIER:  CMA CGM Société Anonyme au Capital de 234 988 ...
+8                                                Tel:  (33) 4 88 91 90 00 - Fax: (33) 4 88 91 90 95 5...
+9                                    PRE CARRIAGE BY*                                                NaN
+10                                  PLACE OF RECEIPT*                                                NaN
+11                              FREIGHT TO BE PAID AT                                             NINGBO
+12                 NUMBER OF ORIGINAL BILLS OF LADING                                          THREE (3)
+13                                             VESSEL                                 CMA CGM MONTMARTRE
+14                                    PORT OF LOADING                                             NINGBO
+15                                  PORT OF DISCHARGE                                      PORT VICTORIA
+16                           FINAL PLACE OF DELIVERY*                                                NaN
+17                                      MARKS AND NOS                                                NaN
+18                           NO AND KIND\nOF PACKAGES                                                  1
+19  DESCRIPTION OF PACKAGES AND GOODS AS STATED BY...                                                NaN
+20                           GROSS WEIGHT\nCARGO\nKGS                                           6709.500
+21                                          TARE\nKGS                                               3900
+22                                   MEASUREMENT\nCBM                                             69.300
+23                                CONTAINER AND SEALS                                        TCNU6556712
+24      SHIPPER'S LOAD STOW AND COUNT SAID TO CONTAIN                                 x 40HC 198 CARTONS
+25                                               SEAL                                           C4170168
+26                                         ** EMAIL :                      ELECTRONICS@PILLAYRGROUP. COM
+27                                       2ND NOTIFY :  SHARP MIDDLE EAST FZE P.O.BOX: 17115, JEBEL AL...
+28                              DISCHARGE PORT AGENT:  SOCIETE SEYCHELLOISE DE NAVIGATION\nPO BOX 339...
+29                            PLACE AND DATE OF ISSUE                                             NINGBO
+30                             SIGNED FOR THE SHIPPER                                                NaN
+31                                      VOYAGE NUMBER                                  0FLBVW1MA/0FLBVW1
+32                              BILL OF LADING NUMBER                                         NBMD995146
+33                                  PLACE OF RECEIPT*                                    PORT OF LOADING
+34                              FREIGHT TO BE PAID AT           NINGBO\nPORT OF DISCHARGE\nPORT VICTORIA
+35                 NUMBER OF ORIGINAL BILLS OF LADING                                              THREE
+36                                             VESSEL                         CMA CGM MONTMARTRE\nNINGBO
+37                           FINAL PLACE OF DELIVERY*                                                NaN
+38                           NO AND KIND\nOF PACKAGES  Shipped on Board, CMA CGM MONTMARTRE 08-APR-20...
+39  DESCRIPTION OF PACKAGES AND GOODS AS STATED BY...                                                CMA
+40                                       GROSS WEIGHT                                                NaN
+41                                  TARE\nMEASUREMENT                                           KGS\nCBM
+42                LOAD STOW AND COUNT SAID TO CONTAIN                                                NaN
+43                                              CARGO                                                KGS
+44                                             Total:                                                  1
+45                            PLACE AND DATE OF ISSUE                                             NINGBO
+46                             SIGNED FOR THE SHIPPER                                                NaN
+47                                            FOR THE        08 APR 2022\nCMA CGM S.A. BY CMA CGM Ningbo
+'''
+
+# print(extract_dates(text))
+
+# matches = datefinder.find_dates(text)
+# for match in matches:
+#     print(match)
+import pandas as pd
+
+# create a sample DataFrame
+df = pd.DataFrame({'date': ['12-2-2020']})
+
+# save the new DataFrame to a CSV file with the desired date format
+df.to_csv('my_data.csv', index=False, date_format='%m-%d-%Y')
