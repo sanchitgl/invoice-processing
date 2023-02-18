@@ -17,8 +17,8 @@ from utils.clean_Df import clean_df
 import json
 
 # set `<your-endpoint>` and `<your-key>` variables with the values from the Azure portal
-endpoint = "https://invoice-automation.cognitiveservices.azure.com/"
-key = "95151a64e6b849939605098c92c04ca5"
+endpoint = "https://aiocr10032022.cognitiveservices.azure.com/"
+key = "4ef0d3fedf7c4bb8ba4792450ca2c677"
 
 def format_bounding_region(bounding_regions):
     if not bounding_regions:

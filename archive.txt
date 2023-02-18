@@ -1,17 +1,24 @@
+do from  terminal : C:\Users\administrator.SMEF\Desktop\AI-OCR MVP\Main\invoice-processing>
+
+***************(for starting server - step1)***************
+-Activate windows environment
+env_invoice\Scripts\activate
+
+
+***************(for starting server - step2)***************
+- Run the UI App
+streamlit run app.py
+
+
 -create Environment 
 virtualenv env_invoice
 
--Activate environment 
+-Activate MAC environment 
 source env_invoice/bin/activate
 
--Activate windows environment
-env_invoice\Scripts\activate
 
 - export dependencies
 pip3 freeze > requirements.txt
 
 - Install dependencies
 pip install -r requirements.txt
-
-- Run the UI App
-streamlit run app.py
