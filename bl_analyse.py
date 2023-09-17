@@ -9,8 +9,8 @@ import json
 import datefinder
 
 # set `<your-endpoint>` and `<your-key>` variables with the values from the Azure portal
-endpoint = "https://aiocr10032022.cognitiveservices.azure.com/"
-key = "4ef0d3fedf7c4bb8ba4792450ca2c677"
+endpoint = "XXXXXXXXXXXX"
+key = "XXXXXXXXXXXX"
 
 
 def analyze_bl(invoices_st):
