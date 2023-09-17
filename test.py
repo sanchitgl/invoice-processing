@@ -6,8 +6,6 @@ import re
 # from entities.fix_product_description import fix_na
 
 # # set `<your-endpoint>` and `<your-key>` variables with the values from the Azure portal
-# endpoint = "https://invoice-automation.cognitiveservices.azure.com/"
-# key = "95151a64e6b849939605098c92c04ca5"
 
 # def format_bounding_region(bounding_regions):
 #     if not bounding_regions:
